@@ -4,6 +4,7 @@ import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -36,6 +37,15 @@ public class Window {
 
         init();
         loop();
+
+        //Free the memory
+        glfwFreeCallbacks(glfwWindow);
+        glfwDestroyWindow(glfwWindow);
+
+        //Terminate glfw and free the error callback
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
+
     }
 
     public void init() {
@@ -58,6 +68,10 @@ public class Window {
         if (glfwWindow == NULL) {
             throw new IllegalStateException("Failed to create the GLFW window");
         }
+
+        glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
+        glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
 
         //Make the openGL context current
         glfwMakeContextCurrent(glfwWindow);
