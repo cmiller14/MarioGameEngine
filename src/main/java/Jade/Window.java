@@ -19,8 +19,10 @@ public class Window {
     private static Window window = null;
     private long glfwWindow;
 
-    private float r, g, b, a;
-    private boolean fadeToBlack;
+    public float r, g, b, a;
+
+    private static Scene currentScene;
+
 
     // private constructor for the window
     private Window() {
@@ -31,6 +33,20 @@ public class Window {
         this.g = 1;
         this.b = 1;
         this.a = 1;
+    }
+
+    public static void changeScene(int newScene) {
+        switch (newScene) {
+            case 0:
+                currentScene = new LevelEditorScene();
+                break;
+            case 1:
+                currentScene = new LevelScene();
+                break;
+            default:
+                assert false : "Unknown scene '" + newScene + "'";
+                break;
+        }
     }
 
     // public get method to create an instance of a window
@@ -103,7 +119,8 @@ public class Window {
     public void loop() {
 
         float beginTime = Time.getTime();
-        float endTime = Time.getTime();
+        float endTime;
+        float dt = -1.0f;
 
         while (!glfwWindowShouldClose(glfwWindow)) {
             //poll events
@@ -112,20 +129,14 @@ public class Window {
             glClearColor(r, g, b, a);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            if (fadeToBlack) {
-                r = Math.max(r - 0.01f, 0);
-                g = Math.max(g - 0.01f, 0);
-                b = Math.max(b - 0.01f, 0);
-            }
-
-            if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
-                fadeToBlack = true;
+            if (dt >= 0) {
+                currentScene.update(dt);
             }
 
             glfwSwapBuffers(glfwWindow);
 
             endTime = Time.getTime();
-            float dt = endTime - beginTime;
+            dt = endTime - beginTime;
             beginTime = endTime;
         }
     }
