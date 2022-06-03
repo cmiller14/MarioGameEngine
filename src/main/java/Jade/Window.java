@@ -114,6 +114,8 @@ public class Window {
         //creates the GLCapabilities instance and makes the OpenGL
         //bindings available for use
         GL.createCapabilities();
+
+        Window.changeScene(0);
     }
 
     public void loop() {
